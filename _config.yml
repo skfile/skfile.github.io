@@ -21,16 +21,15 @@
 title: Savik K.
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
-  A personal website where you can see what I've worked on, currently am working on and hoping to work on going forward. Enjoy and feel free to reach out!
+  A personal website where you can see what I've worked on, currently am working on and hoping to work on going forward.
 # url: "" # the base hostname & protocol for your site, e.g. http://example.com
 domain: skfile.github.io
 # twitter_username:
 github_username: skfile
 
-paginate: 1
+paginate: 3
 
 # Build settings
-theme: jekyll-theme-hydeout
 remote_theme: fongandrew/hydeout
 plugins:
   - jekyll-feed
