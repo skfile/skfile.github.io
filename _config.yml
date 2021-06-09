@@ -18,21 +18,29 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
+markdown:         kramdown
+highlighter:      rouge
+
 title: Savik K.
+github_username:  skfile
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   A personal website where you can see what I've worked on, currently am working on and hoping to work on going forward.
 # url: "" # the base hostname & protocol for your site, e.g. http://example.com
 domain: skfile.github.io
 # twitter_username:
-github_username: skfile
 
-paginate: 3
+paginate: 5
 
 # Build settings
 remote_theme: fongandrew/hydeout
 plugins:
   - jekyll-feed
+  - jekyll-gist
+  - jekyll-redirect-from
+
+sidebar_home_link:  true
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.
