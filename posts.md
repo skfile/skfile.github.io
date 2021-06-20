@@ -3,6 +3,8 @@ layout: page
 title: Posts
 permalink: /posts/
 sidebar_link: true
+sidebar_sort_order: 5
+
 ---
 <ul>
   {% for post in site.posts %}
