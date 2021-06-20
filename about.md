@@ -15,4 +15,4 @@ I'm proficent in the following languages: C, C++, Python, R, SQL, Java, HTML/CSS
 
 I have worked with the following technologies/tech stacks: Django, PostgreSQL, Flutter, Amazon EC2, Docker, Tensorflow, Keras
 
-Aside from listing technical jargon, examples of my use of these skills can be seen on my github [repo](https://github.com/skfile).
+Aside from listing technical jargon, examples of my use of these skills can be seen in the experiences tab. It can also be seen, though with more clutter, on my github [repo](https://github.com/skfile).
