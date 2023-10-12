@@ -28,6 +28,10 @@ h2 {
     transition: background-color 0.3s ease;
 }
 
+#links {
+    color: white;
+}
+
 h2:hover {
     background-color: #555;
 }
