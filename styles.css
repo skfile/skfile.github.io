@@ -1,0 +1,76 @@
+
+/* Basic styling for the page */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+}
+
+main {
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+h2 {
+    background-color: #333;
+    color: white;
+    margin: 0;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+
+h2:hover {
+    background-color: #555;
+}
+
+.experience-item, #skills ul li, #projects ul li {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+.experience-item h3, #skills ul li, #projects ul li {
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Animation for experience items */
+.experience-item.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animation for skill list items */
+#skills ul li.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animation for project list items */
+#projects ul li.active {
+    opacity: 1;
+    transform: translateY(0);
+}
