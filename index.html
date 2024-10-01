@@ -1,78 +1,89 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Savik Kinger</title>
-    <meta name="description" content="Savik Kinger's Personal Website. Mathematical Biology Researcher, Product Manager.">
-    <meta name="keywords" content="Savik Kinger, Mathematical Biology, Engineering, Computational Biology, Topological Data Analysis, Deep Learning, Product Development">
+    <meta name="description" content="Savik Kinger's Personal Website.">
+    <meta name="keywords" content="Savik Kinger, Computer Science, Mathematical Neuroscience">
     <meta name="author" content="Savik Kinger">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Savik Kinger</h1>
-        <a id="links" href="mailto:savik.kinger@columbia.edu">Email</a> |
-        <a id="links" href="https://github.com/skfile">GitHub</a> |
-        <a id="links" href="https://www.linkedin.com/in/savikkinger">LinkedIn</a>
+        <nav class="navbar">
+            <h1 class="logo">Savik Kinger</h1>
+            <ul class="nav-links">
+                <li><span id="email-text">Email: savik [dot] kinger [at] yale [dot] edu</span></li>
+                <li><a href="https://github.com/skfile" target="_blank">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/savikkinger" target="_blank">LinkedIn</a></li>
+                <li><a href="https://mindmesh.substack.com/" target="_blank">Substack</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main>
+        <!-- About Me Section -->
         <section id="about-me">
             <h2>About Me</h2>
-            <p>Currently a final year undergraduate at Columbia University. Interested in the intersection of Mathematics, Computer Science and Biology. Excited and motivated to use new insights to make meaningful impacts!</p>
+            <p>Hello! I am a first-year PhD student in Computer Science at Yale, where I focus on geometric methods to analyze and understand network dynamics, particulary applied to neuroscience. I'm interested in understanding cognition in the brain using mathematics, and using these insights to build better AI systems and clinical tools.</p>
         </section>
 
+        <!-- Experience Section -->
         <section id="experience">
             <h2>Experience</h2>
-            <div class="experience-item">
-                <h3>Mathematical Biology Researcher at Rabadan Lab</h3>
-                <p>Undergraduate Researcher working on projects combining mathematical tools from Topology and Optimal Transport to solve problems in Genomics and Neurology.</p>
-            </div>
-            <div class="experience-item">
-                <h3>Intern at MathWorks</h3>
-                <p>Conducted research on high-performance C++ functions for mathematical operations. Built and tested proof-of-concept Deep Learning Transformer model to assess viability for a Deep Learning-based product offering.</p>
-            </div>
-            <div class="experience-item">
-                <h3>Co-Founder and Product Developer at K.A. LLC</h3>
-                <p>Co-Designed and built software tool to help eCommerce stores connect with customers.</p>
-            </div>
-            <div class="experience-item">
-                <h3>Teaching Assistant</h3>
-                <p>Teaching Assistant for the graduate Analysis of Algorithms course in Columbia's Computer Science Department and Modern Analysis in Columbia's Mathematics Department. </p>
-            </div>
+            <ul>
+                <li>
+                    <strong>PhD Student at Yale University</strong><br>
+                    Researching geometric methods to analyze and understand network dynamics in neuroscience.
+                </li>
+                <li>
+                    <strong>Intern at MathWorks</strong><br>
+                    Conducted research on high-performance C++ functions for mathematical operations. Built and tested proof-of-concept Deep Learning Transformer model to assess viability for a Deep Learning-based product offering.
+                </li>
+            </ul>
         </section>
 
+        <!-- Publications Section -->
         <section id="publications">
             <h2>Publications</h2>
-            <p>Savik Kinger. 2023. Quantifying Recombination Bias in Viral Evolution Using Persistent Homology. In Proceedings of ACM Conference on Bioinformatics, Computational Biology, and Health Informatics (ACM-BCB 2023). <a href="https://doi.org/10.1145/3584371.3612992"> https://doi.org/10.1145/3584371.3612992</a> </p>
+            <ul>
+                <li>
+                    Savik Kinger. 2023. Quantifying Recombination Bias in Viral Evolution Using Persistent Homology. In Proceedings of ACM Conference on Bioinformatics, Computational Biology, and Health Informatics (ACM-BCB 2023). <a href="https://doi.org/10.1145/3584371.3612992" target="_blank">https://doi.org/10.1145/3584371.3612992</a>
+                </li>
+            </ul>
         </section>
 
+        <!-- Education Section -->
         <section id="education">
             <h2>Education</h2>
-            <p>BA in Computer Science and Mathematics from Columbia University. [Graduate May 2024] </p>
-        </section>
-
-        <section id="extracurricular">
-            <h2>Extracurricular Activities</h2>
             <ul>
-                <li>Columbia Road Runners</li>
-                <li>WKCR Radio Station</li>
-                <li>Theoretical CS Seminar</li>
-                <li>Coding Outreach Club</li>
-                <li>Swing Dance Club</li>
+                <li>BA in Computer Science, BA in Mathematics from Columbia University. Graduated May 2024. </li>
             </ul>
         </section>
 
+        <!-- Teaching Experience Section -->
+        <section id="teaching">
+            <h2>Teaching Experience</h2>
+            <ul>
+                <li>CS 4231 Analysis of Algorithms at Columbia (2023-2024)</li>
+                <li>MATH 4061 Modern Analysis at Columbia (2022-2023)</li>
+            </ul>
+        </section>
+
+        <!-- Projects Section -->
         <section id="projects">
-            <h2> Projects <a id="links" href="https://github.com/skfile"> [See my Github!] </a></h2>
+            <h2>Projects</h2>
             <ul>
-                <li>Youtube Recommendation Extension</li>
+                <li>YouTube Recommendation Extension</li>
                 <li>Small Business Product Search Engine</li>
-                <li>Dining Hall Capacity Tracker</li>
+                <li>Many ongoing projects - reach out to collaborate!</li>
             </ul>
+            <p><a href="https://github.com/jslander" target="_blank">[See my GitHub!]</a></p>
         </section>
     </main>
-    <script src="script.js"></script>
+
+    <footer>
+        <p>&copy; 2024 by Savik Kinger</p>
+    </footer>
 </body>
 </html>
