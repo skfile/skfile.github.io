@@ -257,7 +257,7 @@
   /* ── Writing page: auto-load Substack posts ────────────── */
   const mount = document.getElementById('post-mount');
   if (mount) {
-    const isSubDir = location.pathname.replace(/\/$/, '').split('/').length > 2;
+    const isSubDir = location.pathname.replace(/\/$/, '').split('/').length > 1;
     const jsonPath = isSubDir ? '../assets/data/substack_posts.json' : 'assets/data/substack_posts.json';
     fetch(jsonPath, { cache: 'no-store' })
       .then(r => r.ok ? r.json() : null)
