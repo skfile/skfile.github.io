@@ -5,6 +5,13 @@
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  /* Decode HTML entities (&#8217; etc.) from RSS feed text */
+  function decodeEntities(s) {
+    const ta = document.createElement('textarea');
+    ta.innerHTML = s;
+    return ta.value;
+  }
+
   function toast(msg) {
     let el = document.getElementById('toast');
     if (!el) { el = document.createElement('div'); el.id = 'toast'; document.body.appendChild(el); }
@@ -264,13 +271,13 @@
       .then(data => {
         if (!data || !Array.isArray(data.posts) || data.posts.length === 0) return;
         mount.innerHTML = '';
-        data.posts.slice(0, 12).forEach(p => {
+        data.posts.slice(0, 5).forEach(p => {
           const div = document.createElement('div');
           div.className = 'post';
           div.innerHTML = `
             <div class="date">${esc(p.date || '')}</div>
-            <a class="title" href="${esc(p.url || '#')}" target="_blank" rel="noopener">${esc(p.title || '')}</a>
-            ${p.excerpt ? `<div class="excerpt">${esc(p.excerpt)}</div>` : ''}
+            <a class="title" href="${esc(p.url || '#')}" target="_blank" rel="noopener">${esc(decodeEntities(p.title || ''))}</a>
+            ${p.excerpt ? `<div class="excerpt">${esc(decodeEntities(p.excerpt))}</div>` : ''}
           `;
           mount.appendChild(div);
         });
