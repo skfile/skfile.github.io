@@ -51,6 +51,10 @@ Social icons were carried over from the existing site. The email and chevron ico
 
 Older website versions remain in `archive/`.
 
+## Analytics
+
+The homepage loads the asynchronous Google tag for GA4 measurement ID `G-K04K6WJ9R9`. Its single `config` call enables the automatic page-view event. All four content sections live on this page; legacy redirect pages do not load a second tag. The tag is in `index.html`, following [Google’s installation instructions](https://developers.google.com/tag-platform/gtagjs). Verify incoming visits in the property’s Realtime report.
+
 Research contains three 2026 arXiv preprints, each with its original overview figure and links to the paper and full-size image. Research and project images sit beside their descriptions on desktop and stack below them on mobile. Image provenance is recorded in `assets/img/SOURCES.md`.
 
 ## Search and delivery
