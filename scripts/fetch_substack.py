@@ -1,61 +1,84 @@
 #!/usr/bin/env python3
-import json, re, sys, datetime
-from urllib.request import urlopen, Request
-from xml.etree import ElementTree as ET
+"""Refresh the saved feed and static writing links; --cached uses existing JSON."""
+import argparse
+import datetime
+import html
+import json
+import re
+from email.utils import parsedate_to_datetime
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
+from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-CONF = ROOT / "substack.json"
-OUT = ROOT / "assets" / "data" / "substack_posts.json"
+OUT = ROOT / 'assets/data/substack_posts.json'
+START, END = '<!-- POSTS:START -->', '<!-- POSTS:END -->'
 
-def strip_html(s: str) -> str:
-    s = re.sub(r"<[^>]+>", " ", s or "")
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
+class PlainText(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+    def handle_data(self, data):
+        self.parts.append(data)
+
+def excerpt_from(source):
+    parser = PlainText()
+    parser.feed(source)
+    text = ' '.join(' '.join(parser.parts).split())
+    return text if len(text) <= 240 else text[:237].rsplit(' ', 1)[0] + '…'
+
+def render_posts(posts):
+    rows = []
+    for post in posts:
+        url = post.get('url', '')
+        if urlparse(url).scheme not in ('https', 'http') or not post.get('title'):
+            continue
+        title = html.escape(html.unescape(post['title']))
+        try:
+            parsed = parsedate_to_datetime(post.get('date', ''))
+            date_html = f'<time datetime="{parsed.date().isoformat()}">{parsed:%b} {parsed.day}, {parsed.year}</time>'
+        except (TypeError, ValueError, OverflowError):
+            date_html = ''
+        rows.append(f'            <li class="post"><a href="{html.escape(url, quote=True)}">{title}</a>{date_html}</li>')
+        if len(rows) == 5:
+            break
+    if not rows:
+        raise ValueError('Feed contains no usable posts; keeping the existing homepage.')
+    return '\n'.join(rows)
 
 def main():
-    cfg = json.loads(CONF.read_text(encoding="utf-8"))
-    rss_url = cfg.get("rss_url")
-    max_posts = int(cfg.get("max_posts", 12))
-    if not rss_url or "YOURSUBSTACK" in rss_url:
-        print("Set substack.json:rss_url to your real Substack feed URL.", file=sys.stderr)
-        sys.exit(2)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--cached', action='store_true')
+    args = parser.parse_args()
+    if args.cached:
+        payload = json.loads(OUT.read_text())
+    else:
+        cfg = json.loads((ROOT / 'substack.json').read_text())
+        request = Request(cfg['rss_url'], headers={'User-Agent': 'savik-site/1.0'})
+        with urlopen(request, timeout=30) as response:
+            feed = ET.fromstring(response.read())
+        posts = []
+        for item in feed.findall('./channel/item')[:int(cfg.get('max_posts', 12))]:
+            source = item.findtext('{http://purl.org/rss/1.0/modules/content/}encoded') or item.findtext('description') or ''
+            posts.append({
+                'title': html.unescape((item.findtext('title') or '').strip()),
+                'url': (item.findtext('link') or '').strip(),
+                'date': (item.findtext('pubDate') or '').strip(),
+                'excerpt': excerpt_from(source),
+            })
+        payload = {'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'rss_url': cfg['rss_url'], 'posts': posts}
+    homepage = ROOT / 'index.html'
+    source = homepage.read_text()
+    if source.count(START) != 1 or source.count(END) != 1:
+        raise ValueError('Homepage post markers missing or duplicated; no files changed.')
+    rows = render_posts(payload['posts'])
+    updated = re.sub(re.escape(START) + r'.*?' + re.escape(END), lambda _: START + '\n' + rows + '\n            ' + END, source, flags=re.S)
+    if not args.cached:
+        OUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + '\n')
+    homepage.write_text(updated)
+    print('Updated the homepage writing links from the saved feed.')
 
-    req = Request(rss_url, headers={"User-Agent":"vik-site-bot/1.0"})
-    xml = urlopen(req, timeout=30).read()
-
-    root = ET.fromstring(xml)
-    # RSS 2.0: channel/item
-    channel = root.find("channel")
-    items = channel.findall("item") if channel is not None else root.findall(".//item")
-
-    posts = []
-    for it in items[:max_posts]:
-        title = (it.findtext("title") or "").strip()
-        link = (it.findtext("link") or "").strip()
-        pub = (it.findtext("pubDate") or "").strip()
-        desc = (it.findtext("description") or "").strip()
-        # prefer content:encoded if present
-        ns = {"content":"http://purl.org/rss/1.0/modules/content/"}
-        content = it.findtext("content:encoded", default="", namespaces=ns) or ""
-        excerpt_src = content or desc
-        excerpt = strip_html(excerpt_src)[:240]
-        # best-effort date normalization
-        date = pub
-        posts.append({
-            "title": title,
-            "url": link,
-            "date": date,
-            "excerpt": excerpt
-        })
-
-    payload = {
-        "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
-        "rss_url": rss_url,
-        "posts": posts
-    }
-    OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    print(f"Wrote {OUT} with {len(posts)} posts.")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

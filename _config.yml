@@ -1,0 +1,14 @@
+# GitHub Pages uses Jekyll to copy this static site. Keep historical versions
+# and maintenance files in the repository, outside the published website.
+url: "https://skfile.github.io"
+baseurl: ""
+exclude:
+  - archive
+  - scripts
+  - README.md
+  - FILL-IN-GUIDE.md
+  - website-copy.md
+  - design-qa.md
+  - seo-qa.md
+  - substack.json
+  - assets/img/SOURCES.md
