@@ -34,6 +34,8 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .section-content p { margin: 0 0 20px; }
 .section-content > p:last-child { margin-bottom: 0; }
 .research-list { margin-top: 32px; }
+.section-label { color: var(--muted); font-size: 16px; }
+.section-content .all-research { margin: 32px 0 0; }
 .work-item { display: grid; grid-template-columns: minmax(0, 1fr) 34%; gap: 32px; align-items: center; }
 .work-item + .work-item { margin-top: 32px; padding-top: 32px; border-top: 1px solid #e5e9ef; }
 .work-item h3 { margin: 0 0 12px; color: var(--ink); font: 400 25px/1.35 var(--serif); }

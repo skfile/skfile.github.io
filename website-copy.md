@@ -16,6 +16,8 @@ I studied computer science and pure mathematics at Columbia University, where I 
 
 I use mathematics and computational tools to study brains and artificial systems. I’m interested in how they learn and change over time, and what their structure can tell us about how they work.
 
+Selected works
+
 ### Decoding Alignment without Encoding Alignment: A critique of similarity analysis in neuroscience
 
 J. Bertram, L. Dyballa, T. A. Keller, S. Kinger, S. W. Zucker
@@ -39,6 +41,8 @@ J. Bertram, L. Dyballa, T. A. Keller, S. Kinger, S. W. Zucker
 2026 · arXiv preprint
 
 A model can predict brain activity without working like a brain. We look inside a neural foundation model to see how it processes visual information, finding both parallels with biology and differences hidden by prediction accuracy alone.
+
+[More research on Google Scholar](https://scholar.google.com/citations?user=ERmD9kgAAAAJ&hl=en)
 
 ## Projects
 
