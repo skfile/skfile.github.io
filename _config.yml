@@ -3,6 +3,7 @@
 url: "https://skfile.github.io"
 baseurl: ""
 exclude:
+  - CV
   - archive
   - scripts
   - README.md
