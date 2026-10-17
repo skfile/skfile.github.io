@@ -79,7 +79,10 @@ def main():
         payload = json.loads((ROOT / 'assets/data/substack_posts.json').read_text())
     else:
         cfg = json.loads((ROOT / 'substack.json').read_text())
-        request = Request(cfg['rss_url'], headers={'User-Agent': 'savik-site/1.0'})
+        request = Request(cfg['rss_url'], headers={
+            'User-Agent': 'Mozilla/5.0 (compatible; SavikWebsite/1.0; +https://skfile.github.io/)',
+            'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
+        })
         with urlopen(request, timeout=30) as response:
             feed = ET.fromstring(response.read())
         posts = []
