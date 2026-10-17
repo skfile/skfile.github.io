@@ -1,0 +1,73 @@
+name: Refresh Substack and publish site
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pages: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: master
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check feed refresh behavior
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+      - name: Refresh public Substack feed
+        # A failed fetch stops publication and leaves the live site intact.
+        run: python scripts/fetch_substack.py
+      - name: Save changed posts
+        run: |
+          git add index.html assets/data/substack_posts.json sitemap.xml
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'Refresh Substack writing links'
+            git push origin HEAD:master
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Verify private and maintenance files are excluded
+        run: |
+          test ! -e _site/CV
+          test ! -e _site/archive
+          test ! -e _site/scripts
+          test -f _site/index.html
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish updated website
+        id: deployment
+        uses: actions/deploy-pages@v4

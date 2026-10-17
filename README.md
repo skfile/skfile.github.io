@@ -37,7 +37,11 @@ To render the existing saved feed without network access:
 python3 scripts/fetch_substack.py --cached
 ```
 
-There is no scheduled feed refresh configured. Run the command when updating the site.
+GitHub Actions runs **Refresh Substack and publish site** every hour (at minute 17 UTC), on pushes to `master`, and manually through **Actions → Refresh Substack and publish site → Run workflow**. It fetches the feed, commits changed post data and homepage links, builds with Jekyll, and explicitly deploys the result to GitHub Pages. Unchanged posts preserve the cached timestamp and create no commits. The sitemap date changes when visible post links change. Builds still deploy on unchanged feeds so a later run can recover a failed deployment.
+
+A failed feed fetch or validation stops publication and keeps the existing live site intact. The next hourly run retries. Checks run independently of your computer. GitHub schedules can be delayed; this is polling, not an instant Substack webhook. In a public repository, GitHub may disable scheduled workflows after 60 days without repository activity; re-enable this workflow in Actions if that happens.
+
+Run the refresh regression checks with `python3 -m unittest discover -s scripts -p 'test_*.py'`.
 
 ## Navigation and sharing
 
@@ -63,5 +67,5 @@ Research contains three 2026 arXiv preprints, each with its original overview fi
 - `robots.txt` allows crawling and points to the single canonical URL in `sitemap.xml`. Error pages are noindex, and legacy section URLs redirect to the homepage sections.
 - Content is available in the initial HTML, including the collapsed native details. Images have alt text and reserved dimensions; five lazy-loaded WebP thumbnails total about 221 KB. Full-resolution research figures remain separate links.
 - The footer keeps a minimum 96-pixel content gap on desktop and 72 pixels on mobile, and moves toward the viewport bottom when the page is short.
-- `_config.yml` excludes archived websites and maintenance files from the GitHub Pages build. Pages was verified to build from the master branch root using its legacy/Jekyll pipeline. Keep these exclusions in any future custom publishing workflow.
+- `_config.yml` excludes archived websites and maintenance files from the GitHub Pages build. Pages uses GitHub Actions publishing through `.github/workflows/publish.yml`, building the master branch root with Jekyll. Keep these exclusions in any future custom publishing workflow.
 - After publishing, submit `https://skfile.github.io/sitemap.xml` in Google Search Console and inspect the homepage. Search indexing and real-user performance require the live deployment; local checks cannot verify them. See `seo-qa.md` for this review’s evidence and limits.

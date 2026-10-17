@@ -13,7 +13,6 @@ from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'assets/data/substack_posts.json'
 START, END = '<!-- POSTS:START -->', '<!-- POSTS:END -->'
 
 class PlainText(HTMLParser):
@@ -48,12 +47,36 @@ def render_posts(posts):
         raise ValueError('Feed contains no usable posts; keeping the existing homepage.')
     return '\n'.join(rows)
 
+def update_site(payload, cached=False):
+    """Validate before writing; unchanged feeds must not create hourly commits."""
+    homepage = ROOT / 'index.html'
+    out = ROOT / 'assets/data/substack_posts.json'
+    sitemap = ROOT / 'sitemap.xml'
+    source = homepage.read_text()
+    if source.count(START) != 1 or source.count(END) != 1 or source.index(START) > source.index(END):
+        raise ValueError('Homepage post markers missing, duplicated, or out of order; no files changed.')
+    rows = render_posts(payload['posts'])
+    updated = re.sub(re.escape(START) + r'.*?' + re.escape(END), lambda _: START + '\n' + rows + '\n            ' + END, source, flags=re.S)
+    changed = False
+    if not cached:
+        previous = json.loads(out.read_text()) if out.exists() else {}
+        if any(previous.get(key) != payload.get(key) for key in ('rss_url', 'posts')):
+            out.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + '\n')
+            changed = True
+    if source != updated:
+        homepage.write_text(updated)
+        if sitemap.exists():
+            today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+            sitemap.write_text(re.sub(r'<lastmod>[^<]+</lastmod>', f'<lastmod>{today}</lastmod>', sitemap.read_text()))
+        changed = True
+    return changed
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--cached', action='store_true')
     args = parser.parse_args()
     if args.cached:
-        payload = json.loads(OUT.read_text())
+        payload = json.loads((ROOT / 'assets/data/substack_posts.json').read_text())
     else:
         cfg = json.loads((ROOT / 'substack.json').read_text())
         request = Request(cfg['rss_url'], headers={'User-Agent': 'savik-site/1.0'})
@@ -69,16 +92,8 @@ def main():
                 'excerpt': excerpt_from(source),
             })
         payload = {'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'rss_url': cfg['rss_url'], 'posts': posts}
-    homepage = ROOT / 'index.html'
-    source = homepage.read_text()
-    if source.count(START) != 1 or source.count(END) != 1:
-        raise ValueError('Homepage post markers missing or duplicated; no files changed.')
-    rows = render_posts(payload['posts'])
-    updated = re.sub(re.escape(START) + r'.*?' + re.escape(END), lambda _: START + '\n' + rows + '\n            ' + END, source, flags=re.S)
-    if not args.cached:
-        OUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + '\n')
-    homepage.write_text(updated)
-    print('Updated the homepage writing links from the saved feed.')
+    changed = update_site(payload, cached=args.cached)
+    print('Updated Substack posts.' if changed else 'Substack posts are unchanged; no files written.')
 
 if __name__ == '__main__':
     main()
