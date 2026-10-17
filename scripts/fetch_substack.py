@@ -27,6 +27,7 @@ def fetch_feed(url):
     except HTTPError as error:
         if error.code != 403:
             raise
+        print('RSS rejected:', error.headers.get('server'), error.read(300).decode(errors='replace'))
         # Public archive metadata provides the same article links when RSS is blocked.
         archive_url = urljoin(url, '/api/v1/archive?sort=new&offset=0&limit=12')
         with urlopen(Request(archive_url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=30) as response:
