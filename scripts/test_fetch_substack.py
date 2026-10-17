@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
-from urllib.error import URLError
+from unittest.mock import Mock, patch
+from urllib.error import HTTPError, URLError
 
 import fetch_substack as feed
 
@@ -92,6 +92,16 @@ class FeedRefreshTests(unittest.TestCase):
         self.assertNotIn('<script>', rows)
         self.assertIn('&lt;script&gt;', rows)
         self.assertIn('a=1&amp;b=2', rows)
+
+    def test_hosted_runner_403_retries_same_public_feed(self):
+        url = self.payload['rss_url']
+        client = Mock()
+        client.requests.get.return_value.content = b'<rss />'
+        with patch.object(feed, 'urlopen', side_effect=HTTPError(url, 403, 'Forbidden', {}, None)), \
+                patch.dict('sys.modules', {'curl_cffi': client}):
+            self.assertEqual(feed.fetch_feed(url), b'<rss />')
+        client.requests.get.assert_called_once_with(url, impersonate='chrome', timeout=30)
+        client.requests.get.return_value.raise_for_status.assert_called_once_with()
 
 
 if __name__ == '__main__':

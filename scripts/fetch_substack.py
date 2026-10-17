@@ -9,11 +9,30 @@ from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 START, END = '<!-- POSTS:START -->', '<!-- POSTS:END -->'
+
+def fetch_feed(url):
+    request = Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; SavikWebsite/1.0; +https://skfile.github.io/)',
+        'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
+    })
+    try:
+        with urlopen(request, timeout=30) as response:
+            return response.read()
+    except HTTPError as error:
+        if error.code != 403:
+            raise
+        # Substack can reject urllib's TLS client on hosted runners.
+        # Retry the same public feed with a browser-compatible HTTP client.
+        from curl_cffi import requests
+        response = requests.get(url, impersonate='chrome', timeout=30)
+        response.raise_for_status()
+        return response.content
 
 class PlainText(HTMLParser):
     def __init__(self):
@@ -79,12 +98,7 @@ def main():
         payload = json.loads((ROOT / 'assets/data/substack_posts.json').read_text())
     else:
         cfg = json.loads((ROOT / 'substack.json').read_text())
-        request = Request(cfg['rss_url'], headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; SavikWebsite/1.0; +https://skfile.github.io/)',
-            'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
-        })
-        with urlopen(request, timeout=30) as response:
-            feed = ET.fromstring(response.read())
+        feed = ET.fromstring(fetch_feed(cfg['rss_url']))
         posts = []
         for item in feed.findall('./channel/item')[:int(cfg.get('max_posts', 12))]:
             source = item.findtext('{http://purl.org/rss/1.0/modules/content/}encoded') or item.findtext('description') or ''

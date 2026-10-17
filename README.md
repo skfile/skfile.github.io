@@ -1,7 +1,7 @@
 # Savik Kinger — personal website
 
 A static, single-page website hosted on GitHub Pages at https://skfile.github.io.
-No packages, build step, external fonts, or client-side content fetches are required.
+The frontend needs no packages, external fonts, or client-side content fetches.
 
 ## Editing
 
@@ -26,6 +26,7 @@ Open http://127.0.0.1:8000. GitHub Pages serves these same files directly.
 ## Writing
 
 ```sh
+python3 -m pip install -r scripts/requirements.txt
 python3 scripts/fetch_substack.py
 ```
 
