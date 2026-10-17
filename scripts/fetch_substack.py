@@ -5,10 +5,10 @@ import datetime
 import html
 import json
 import re
-from email.utils import parsedate_to_datetime
+from email.utils import parsedate_to_datetime, format_datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
@@ -18,7 +18,7 @@ START, END = '<!-- POSTS:START -->', '<!-- POSTS:END -->'
 
 def fetch_feed(url):
     request = Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (compatible; SavikWebsite/1.0; +https://skfile.github.io/)',
+        'User-Agent': 'Mozilla/5.0',
         'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
     })
     try:
@@ -27,12 +27,25 @@ def fetch_feed(url):
     except HTTPError as error:
         if error.code != 403:
             raise
-        # Substack can reject urllib's TLS client on hosted runners.
-        # Retry the same public feed with a browser-compatible HTTP client.
-        from curl_cffi import requests
-        response = requests.get(url, impersonate='chrome', timeout=30)
-        response.raise_for_status()
-        return response.content
+        # Public archive metadata provides the same article links when RSS is blocked.
+        archive_url = urljoin(url, '/api/v1/archive?sort=new&offset=0&limit=12')
+        with urlopen(Request(archive_url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=30) as response:
+            posts = json.load(response)
+        if not isinstance(posts, list) or not posts:
+            raise ValueError('Public archive contains no posts; keeping the existing homepage.')
+        rss = ET.Element('rss')
+        channel = ET.SubElement(rss, 'channel')
+        for post in posts:
+            item = ET.SubElement(channel, 'item')
+            date = datetime.datetime.fromisoformat(post['post_date'].replace('Z', '+00:00'))
+            for key, value in {
+                'title': post['title'], 'link': post['canonical_url'],
+                'pubDate': format_datetime(date, usegmt=True),
+                'description': post.get('description') or post.get('subtitle') or '',
+            }.items():
+                ET.SubElement(item, key).text = value
+        print('Using public Substack archive because the RSS endpoint returned 403.')
+        return ET.tostring(rss)
 
 class PlainText(HTMLParser):
     def __init__(self):

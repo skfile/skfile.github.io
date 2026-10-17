@@ -26,7 +26,6 @@ Open http://127.0.0.1:8000. GitHub Pages serves these same files directly.
 ## Writing
 
 ```sh
-python3 -m pip install -r scripts/requirements.txt
 python3 scripts/fetch_substack.py
 ```
 

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 
 import fetch_substack as feed
@@ -93,15 +93,17 @@ class FeedRefreshTests(unittest.TestCase):
         self.assertIn('&lt;script&gt;', rows)
         self.assertIn('a=1&amp;b=2', rows)
 
-    def test_hosted_runner_403_retries_same_public_feed(self):
+    def test_rss_403_uses_public_archive(self):
         url = self.payload['rss_url']
-        client = Mock()
-        client.requests.get.return_value.content = b'<rss />'
-        with patch.object(feed, 'urlopen', side_effect=HTTPError(url, 403, 'Forbidden', {}, None)), \
-                patch.dict('sys.modules', {'curl_cffi': client}):
-            self.assertEqual(feed.fetch_feed(url), b'<rss />')
-        client.requests.get.assert_called_once_with(url, impersonate='chrome', timeout=30)
-        client.requests.get.return_value.raise_for_status.assert_called_once_with()
+        archive = [{'title': 'New & interesting', 'canonical_url': 'https://example.substack.com/p/new',
+                    'post_date': '2026-10-15T05:58:49.538Z', 'description': 'A new post.'}]
+        with patch.object(feed, 'urlopen', side_effect=[HTTPError(url, 403, 'Forbidden', {}, None),
+                io.BytesIO(json.dumps(archive).encode())]) as request:
+            rss = feed.ET.fromstring(feed.fetch_feed(url))
+        self.assertEqual(rss.findtext('./channel/item/title'), archive[0]['title'])
+        self.assertEqual(rss.findtext('./channel/item/pubDate'), 'Thu, 15 Oct 2026 05:58:49 GMT')
+        self.assertEqual(request.call_args[0][0].full_url,
+                         'https://example.substack.com/api/v1/archive?sort=new&offset=0&limit=12')
 
 
 if __name__ == '__main__':
