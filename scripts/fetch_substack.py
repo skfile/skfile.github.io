@@ -9,7 +9,6 @@ from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
-from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
 
@@ -21,28 +20,8 @@ def fetch_feed(url):
         'User-Agent': 'Mozilla/5.0',
         'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8',
     })
-    try:
-        with urlopen(request, timeout=30) as response:
-            return response.read()
-    except HTTPError as error:
-        if error.code != 403:
-            raise
-        return fetch_feed_in_browser(url)
-
-
-def fetch_feed_in_browser(url):
-    """Read the public RSS document with an ordinary browser when required."""
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel='chrome', headless=False)
-        try:
-            page = browser.new_page()
-            with page.expect_response(lambda response: response.url == url and response.status == 200,
-                                      timeout=45000) as response:
-                page.goto(url, wait_until='domcontentloaded', timeout=45000)
-            return response.value.body()
-        finally:
-            browser.close()
+    with urlopen(request, timeout=30) as response:
+        return response.read()
 
 
 class PlainText(HTMLParser):

@@ -37,9 +37,11 @@ To render the existing saved feed without network access:
 python3 scripts/fetch_substack.py --cached
 ```
 
-GitHub Actions runs **Refresh Substack and publish site** every hour (at minute 17 UTC), on pushes to `master`, and manually through **Actions → Refresh Substack and publish site → Run workflow**. It fetches the feed, commits changed post data and homepage links, builds with Jekyll, and explicitly deploys the result to GitHub Pages. Unchanged posts preserve the cached timestamp and create no commits. The sitemap date changes when visible post links change. Builds still deploy on unchanged feeds so a later run can recover a failed deployment.
+GitHub Actions checks the feed through **Refresh Substack** every hour (at minute 17 UTC), or manually through **Actions → Refresh Substack → Run workflow**. Successful refreshes commit changed post data and homepage links, then invoke **Publish website** to deploy. Unchanged feeds preserve the cache timestamp and create no commits. The sitemap date changes when visible post links change.
 
-A failed feed fetch or validation stops publication and keeps the existing live site intact. The next hourly run retries. Checks run independently of your computer. GitHub schedules can be delayed; this is polling, not an instant Substack webhook. In a public repository, GitHub may disable scheduled workflows after 60 days without repository activity; re-enable this workflow in Actions if that happens.
+**Current upstream limitation (2026-10-17):** Substack returns a Cloudflare browser-verification page to GitHub-hosted runners. Linux, macOS, alternative HTTP clients, the public archive, and a Chrome session were tested without success. Scheduled refreshes therefore currently fail safely; automatic synchronization is not yet operational. A permitted feed source or another hosting environment is needed. Local refresh still works.
+
+**Publish website** also runs independently on pushes to `master` and on manual dispatch. A Substack outage cannot block ordinary website deployment. A failed scheduled fetch leaves the saved posts and live website untouched. GitHub schedules can be delayed; public-repository schedules may also be disabled after 60 days without repository activity.
 
 Run the refresh regression checks with `python3 -m unittest discover -s scripts -p 'test_*.py'`.
 

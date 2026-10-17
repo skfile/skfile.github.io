@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from urllib.error import HTTPError, URLError
+from urllib.error import URLError
 
 import fetch_substack as feed
 
@@ -93,12 +93,6 @@ class FeedRefreshTests(unittest.TestCase):
         self.assertIn('&lt;script&gt;', rows)
         self.assertIn('a=1&amp;b=2', rows)
 
-    def test_rss_403_uses_browser_for_same_public_feed(self):
-        url = self.payload['rss_url']
-        with patch.object(feed, 'urlopen', side_effect=HTTPError(url, 403, 'Forbidden', {}, None)), \
-                patch.object(feed, 'fetch_feed_in_browser', return_value=b'<rss />') as browser:
-            self.assertEqual(feed.fetch_feed(url), b'<rss />')
-        browser.assert_called_once_with(url)
 
 
 if __name__ == '__main__':

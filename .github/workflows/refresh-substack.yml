@@ -1,0 +1,48 @@
+name: Refresh Substack
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: substack-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: master
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check feed refresh behavior
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+      - name: Refresh public Substack feed
+        run: python scripts/fetch_substack.py
+      - name: Save changed posts
+        run: |
+          git add index.html assets/data/substack_posts.json sitemap.xml
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'Refresh Substack writing links'
+            git push origin HEAD:master
+          fi
+
+  publish:
+    needs: refresh
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/publish.yml
