@@ -93,17 +93,12 @@ class FeedRefreshTests(unittest.TestCase):
         self.assertIn('&lt;script&gt;', rows)
         self.assertIn('a=1&amp;b=2', rows)
 
-    def test_rss_403_uses_public_archive(self):
+    def test_rss_403_uses_browser_for_same_public_feed(self):
         url = self.payload['rss_url']
-        archive = [{'title': 'New & interesting', 'canonical_url': 'https://example.substack.com/p/new',
-                    'post_date': '2026-10-15T05:58:49.538Z', 'description': 'A new post.'}]
-        with patch.object(feed, 'urlopen', side_effect=[HTTPError(url, 403, 'Forbidden', {}, None),
-                io.BytesIO(json.dumps(archive).encode())]) as request:
-            rss = feed.ET.fromstring(feed.fetch_feed(url))
-        self.assertEqual(rss.findtext('./channel/item/title'), archive[0]['title'])
-        self.assertEqual(rss.findtext('./channel/item/pubDate'), 'Thu, 15 Oct 2026 05:58:49 GMT')
-        self.assertEqual(request.call_args[0][0].full_url,
-                         'https://example.substack.com/api/v1/archive?sort=new&offset=0&limit=12')
+        with patch.object(feed, 'urlopen', side_effect=HTTPError(url, 403, 'Forbidden', {}, None)), \
+                patch.object(feed, 'fetch_feed_in_browser', return_value=b'<rss />') as browser:
+            self.assertEqual(feed.fetch_feed(url), b'<rss />')
+        browser.assert_called_once_with(url)
 
 
 if __name__ == '__main__':

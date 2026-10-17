@@ -5,10 +5,10 @@ import datetime
 import html
 import json
 import re
-from email.utils import parsedate_to_datetime, format_datetime
+from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
@@ -27,26 +27,23 @@ def fetch_feed(url):
     except HTTPError as error:
         if error.code != 403:
             raise
-        print('RSS rejected:', error.headers.get('server'), error.read(300).decode(errors='replace'))
-        # Public archive metadata provides the same article links when RSS is blocked.
-        archive_url = urljoin(url, '/api/v1/archive?sort=new&offset=0&limit=12')
-        with urlopen(Request(archive_url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=30) as response:
-            posts = json.load(response)
-        if not isinstance(posts, list) or not posts:
-            raise ValueError('Public archive contains no posts; keeping the existing homepage.')
-        rss = ET.Element('rss')
-        channel = ET.SubElement(rss, 'channel')
-        for post in posts:
-            item = ET.SubElement(channel, 'item')
-            date = datetime.datetime.fromisoformat(post['post_date'].replace('Z', '+00:00'))
-            for key, value in {
-                'title': post['title'], 'link': post['canonical_url'],
-                'pubDate': format_datetime(date, usegmt=True),
-                'description': post.get('description') or post.get('subtitle') or '',
-            }.items():
-                ET.SubElement(item, key).text = value
-        print('Using public Substack archive because the RSS endpoint returned 403.')
-        return ET.tostring(rss)
+        return fetch_feed_in_browser(url)
+
+
+def fetch_feed_in_browser(url):
+    """Read the public RSS document with an ordinary browser when required."""
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(channel='chrome', headless=False)
+        try:
+            page = browser.new_page()
+            with page.expect_response(lambda response: response.url == url and response.status == 200,
+                                      timeout=45000) as response:
+                page.goto(url, wait_until='domcontentloaded', timeout=45000)
+            return response.value.body()
+        finally:
+            browser.close()
+
 
 class PlainText(HTMLParser):
     def __init__(self):
