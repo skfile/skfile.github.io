@@ -21,3 +21,9 @@ For icon attribution, see `icons/bootstrap-LICENSE.txt` and the project README.
 
 - The five `.webp` thumbnails are proportion-preserving exports of the source images above, capped at 900 pixels with WebP quality 88. Their combined size is 221,060 bytes, compared with 2,563,060 bytes for the PNG sources. Original research PNGs remain available through the enlarge links.
 - `social-preview.png` is a 1200 × 630 browser-rendered typography card matching the site, using its approved name and introduction themes. Its editable HTML is `scripts/social-preview.html`; it is original website material, with no external art or fonts.
+
+## Minimal homepage additions (November 7, 2026)
+
+- `profile.jpeg`: neutral generated placeholder, intended to be replaced by the site owner's JPEG with the same filename. `profile-placeholder.svg` is the fallback. No stock portrait or third-party likeness is used.
+- `research/positional-coupling-figure1.pdf`: original Figure 1 supplied by Savik Kinger from `Neurips2026Figure1.pdf`, preserved unchanged. `research/positional-coupling-figure1.webp` is a proportional 2200 × 1320 rendering for the page.
+- The corresponding paper is *Reading Positional Coupling in Transformers with Diffusion Scores* (NeurIPS 2026), by Savik Kinger, Johannes Bertram, Luciano Dyballa, T. Anderson Keller, and Steven W. Zucker. Its camera-ready PDF is preserved in `assets/papers/reading-positional-coupling.pdf`.

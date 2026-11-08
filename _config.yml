@@ -5,6 +5,7 @@ baseurl: ""
 exclude:
   - CV
   - archive
+  - mockups
   - scripts
   - README.md
   - FILL-IN-GUIDE.md

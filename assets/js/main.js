@@ -1,27 +1,27 @@
-/* Native details provide mouse, keyboard, and no-JavaScript access. */
 (() => {
-  const sections = [...document.querySelectorAll('details.section')];
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  function revealLinkedSection() {
-    const section = sections.find(item => `#${item.id}` === location.hash);
-    if (section) {
-      section.open = true;
-      requestAnimationFrame(() => section.scrollIntoView({ block: 'start' }));
-    }
+  function revealAnchor() {
+    if (!location.hash) return;
+    let id; try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
+    const target = document.getElementById(id);
+    if (!target) return;
+    let current = target;
+    while (current) { if (current.tagName === 'DETAILS') current.open = true; current = current.parentElement; }
+    requestAnimationFrame(() => target.scrollIntoView({block:'start'}));
   }
-  sections.forEach(section => {
-    section.addEventListener('toggle', () => {
-      const content = section.querySelector('.section-content');
-      content.getAnimations?.().forEach(animation => animation.cancel());
-      if (section.open && !reducedMotion.matches && content.animate) {
-        content.animate([
-          { opacity: 0, transform: 'translateY(-4px)' },
-          { opacity: 1, transform: 'translateY(0)' }
-        ], { duration: 160, easing: 'ease-out' });
-      }
-    });
+  window.addEventListener('hashchange', revealAnchor);
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href^="#"]');
+    if (link && link.hash === location.hash) revealAnchor();
   });
-  window.addEventListener('hashchange', revealLinkedSection);
-  revealLinkedSection();
+  revealAnchor();
+  const portrait = document.getElementById('profile-photo');
+  if (portrait) {
+    function showPlaceholder() {
+      portrait.removeEventListener('error', showPlaceholder);
+      portrait.src = '/assets/img/profile-placeholder.svg';
+      portrait.alt = 'Portrait placeholder';
+    }
+    portrait.addEventListener('error', showPlaceholder);
+    if (portrait.complete && !portrait.naturalWidth) showPlaceholder();
+  }
 })();

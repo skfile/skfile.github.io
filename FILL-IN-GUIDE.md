@@ -1,15 +1,22 @@
 # Content editing guide
 
-All site copy and social destinations now live directly in `index.html`.
+## Replace the photo
 
-1. Edit the introduction in `<p class="introduction">`.
-2. Edit the content inside the four `<details>` sections: `about`, `research`, `projects`, and `writing`.
-3. Add or revise project `<article>` elements inside `.project-list`. Use a brief description and a descriptive link. Aver is labeled as an early demo; its repository is private, so the site links to the public walkthrough.
-4. Update social link destinations inside `.socials`. Keep each icon's accessible label and title. The Scholar destination links to the direct profile.
-5. Update the static title, description, social metadata, and structured data in `<head>` when changing identity or site positioning.
-6. Run `python3 scripts/fetch_substack.py` locally to refresh Writing, then publish the changed files. It updates the JSON, the `POSTS:START` / `POSTS:END` block, and the sitemap date when visible links change. Do not remove those markers. An hourly **Refresh Substack** workflow is configured, but currently blocked by Substack's browser verification on GitHub's servers; see README.md. The independent **Publish website** workflow still deploys normal pushes.
-7. Preview locally using the command in README.md, then publish the changed files through the repository's existing GitHub Pages setup.
+Replace **`assets/img/profile.jpeg`** with your own JPEG using exactly the same filename. Commit and push it to `master`; the existing GitHub Pages workflow publishes it. No HTML changes are needed. If replacing through GitHub, open `assets/img`, choose **Add file → Upload files**, and upload `profile.jpeg` there.
 
-The page works without JavaScript. JavaScript only enhances opening animation and section deep links; keep core content in HTML.
+Use a centered portrait around 800–1200 pixels tall. The layout crops it automatically. Refresh after deployment (hard-refresh once if the old image remains cached). A fallback SVG is available if the JPEG is missing or cannot load.
 
-Research and project entries use `.work-item`, with text in `.work-copy` and an image in `.work-visual`. Keep image width/height attributes accurate, write descriptive alt text, and retain the original figure's proportions. Research figures link to their full-size assets; captions link to the source figure. Record new image sources in `assets/img/SOURCES.md`.
+## Edit the page
+
+All site text lives in `index.html`.
+
+1. The visible introduction and biography are in `<section class="intro" id="about">`. Keep the current PhD sentence, previous studies, and research question together in one paragraph.
+2. Research papers are individual `<details class="paper-disclosure">` entries inside `#research`. Edit the title in `<summary><h3>`, and the authors, venue, description, links, and figure in `.disclosure-body`. Keep new entries collapsed by omitting `open`.
+3. Keep the Google Scholar link after the paper list.
+4. Projects and Writing are closed `<details class="section-disclosure">` sections. Aver remains labeled as an early demo.
+5. Update social link destinations inside `.socials` and preserve their visible names.
+6. Keep exactly one `POSTS:START` / `POSTS:END` marker pair around the writing list. `python3 scripts/fetch_substack.py --cached` renders saved posts; omit `--cached` to fetch new ones. See README for the current upstream feed limitation.
+7. Preserve the title, metadata, structured data, and analytics in `<head>`. Update the CSS/JS revision suffix when changing those assets.
+8. Preview with `python3 -m http.server 8765 --bind 127.0.0.1`, then commit and push only intended production files.
+
+The local `mockups/` gallery is excluded from publication. The NeurIPS camera-ready PDF lives at `assets/papers/reading-positional-coupling.pdf`, and its supplied Figure 1 is in `assets/img/research/`. Keep figures at their original proportions, give images descriptive alt text, and record new image sources in `assets/img/SOURCES.md`.

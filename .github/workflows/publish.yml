@@ -32,6 +32,7 @@ jobs:
       - name: Verify private and maintenance files are excluded
         run: |
           test ! -e _site/CV
+          test ! -e _site/mockups
           test ! -e _site/archive
           test ! -e _site/scripts
           test -f _site/index.html
