@@ -24,6 +24,6 @@ For icon attribution, see `icons/bootstrap-LICENSE.txt` and the project README.
 
 ## Minimal homepage additions (November 7, 2026)
 
-- `profile.jpeg`: neutral generated placeholder, intended to be replaced by the site owner's JPEG with the same filename. `profile-placeholder.svg` is the fallback. No stock portrait or third-party likeness is used.
+- `profile.jpeg`: portrait supplied by Savik Kinger on November 14, 2026, preserved unchanged. The filename uses lowercase to match the homepage. `profile-placeholder.svg` remains the fallback if the photo cannot load.
 - `research/positional-coupling-figure1.pdf`: original Figure 1 supplied by Savik Kinger from `Neurips2026Figure1.pdf`, preserved unchanged. `research/positional-coupling-figure1.webp` is a proportional 2200 × 1320 rendering for the page.
 - The corresponding paper is *Reading Positional Coupling in Transformers with Diffusion Scores* (NeurIPS 2026), by Savik Kinger, Johannes Bertram, Luciano Dyballa, T. Anderson Keller, and Steven W. Zucker. Its camera-ready PDF is preserved in `assets/papers/reading-positional-coupling.pdf`.
