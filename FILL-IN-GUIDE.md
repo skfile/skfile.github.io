@@ -11,7 +11,7 @@ Use a centered portrait around 800–1200 pixels tall. The layout crops it autom
 All site text lives in `index.html`.
 
 1. The visible introduction and biography are in `<section class="intro" id="about">`. Keep the current PhD sentence, previous studies, and research question together in one paragraph.
-2. Research papers are individual `<details class="paper-disclosure">` entries inside `#research`. Edit the title in `<summary><h3>`, and the authors, venue, description, links, and figure in `.disclosure-body`. Keep new entries collapsed by omitting `open`.
+2. Research papers are grouped into Neuroscience, Theory, and Interpretability using `.research-group` sections inside `#research`. Each paper is a `<details class="paper-disclosure">` entry. Edit the title in `<summary><h4>`, and the authors, venue, description, links, and figure in `.disclosure-body`. Keep new entries collapsed by omitting `open`.
 3. Keep the Google Scholar link after the paper list.
 4. Projects and Writing are closed `<details class="section-disclosure">` sections. Aver remains labeled as an early demo.
 5. Update social link destinations inside `.socials` and preserve their visible names.

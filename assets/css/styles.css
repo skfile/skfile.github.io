@@ -27,7 +27,7 @@ details.section-disclosure > summary h2 { border:0; padding:0; margin:0; font-si
 details.section-disclosure > .disclosure-body { padding:0 0 18px; }
 details.paper-disclosure { border-top:1px solid var(--line,#d8dfdc); padding:0; margin:0; background:transparent; border-radius:0; }
 details.paper-disclosure > summary { padding:18px 0; }
-details.paper-disclosure > summary h3 { font-size:18px; line-height:1.5; margin:0; font-weight:400; letter-spacing:0; }
+details.paper-disclosure > summary :is(h3,h4) { font-size:18px; line-height:1.5; margin:0; font-weight:400; letter-spacing:0; }
 details.paper-disclosure > .disclosure-body { padding:0 0 24px; }
 details.paper-disclosure .paper { display:block; padding:0; border:0; margin:0; background:transparent; }
 details.paper-disclosure .work-visual { width:100%; max-width:560px; margin:22px 0 0; }
@@ -42,10 +42,18 @@ details.all-research-disclosure .archive-note { font:400 13px/1.6 Arial,sans-ser
 .disclosure-body .paper-meta { font-size:12px; margin:0 0 16px; }
 .disclosure-body .work-copy > p:not([class]) { font-size:15px; line-height:1.75; }
 .disclosure-body .work-link { display:inline-block; font-size:14px; margin-top:8px; }
-@media(max-width:600px){ details.section-disclosure > summary h2 {font-size:23px} details.paper-disclosure > summary h3{font-size:17px} details.section-disclosure>summary{padding:18px 0} }
+@media(max-width:600px){ details.section-disclosure > summary h2 {font-size:23px} details.paper-disclosure > summary :is(h3,h4){font-size:17px} details.section-disclosure>summary{padding:18px 0} }
 /* The expanded archive replaces the selected list instead of duplicating it. */
 .disclosure-body:has(> .all-research-disclosure[open]) > .paper-disclosure { display:none; }
 
 /* Permanent homepage controls and error-page layout. */
 .home-link{font-size:14px;text-decoration:none;letter-spacing:.04em;color:var(--muted)}
 .error-page{padding-top:80px;padding-bottom:80px;text-align:center}.error-page h1{margin-bottom:24px}.error-page p{margin-top:16px}
+
+/* Topic headings organize papers without adding another layer of dropdowns. */
+.research-group{margin:4px 0 28px;min-width:0}
+.research-group>h3{margin:0 0 10px;font-size:15px;line-height:1.5;font-weight:600;color:var(--muted);scroll-margin-top:24px}
+.research-group .paper-disclosure>summary h4{margin:0;color:var(--ink)}
+.paper-disclosure.research-overview .work-visual{max-width:100%;padding:0}
+.paper-disclosure.research-overview .work-visual img{max-height:none}
+.research-group:last-of-type{margin-bottom:0}
